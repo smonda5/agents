@@ -1,0 +1,28 @@
+find_trending_news:
+  description: >
+    Find the top trending technology news in {sector} by searching the latest news as of {current_date}. Find news that you've not found before.
+  expected_output: >
+    A list of trending news in {sector}
+  agent: trending_news_finder
+  output_file: output/trending_news.json
+
+research_trending_news:
+  description: >
+    Given a list of trending news, provide detailed coverage of each news in a report by searching online
+  expected_output: >
+    A report containing detailed coverage of each news
+  agent: technology_researcher
+  context:
+    - find_trending_news
+  output_file: output/research_report.json
+
+pick_news_of_the_day:
+  description: >
+    Analyze the research findings and pick the most interesting news.
+    Send a notification to the user with the summary of the news.
+  expected_output: >
+    The chosen news headline, a summary of the news and why do you think it is the most interesting news.
+  agent: story_picker
+  context:
+    - research_trending_news
+  output_file: output/decision.md
