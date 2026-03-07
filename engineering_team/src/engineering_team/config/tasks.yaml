@@ -1,0 +1,61 @@
+create_math_homework:
+  description: >
+    You are creating a math assignment for a student in grade {grade}.
+    Come up with an interesting, fun and challenging assignment.
+  expected_output: >
+    A suitable assignment for a student in grade {grade} with clear instructions.
+  agent: maths_tutor
+  output_file: output/assignment.txt
+
+create_english_homework:
+  description: >
+    You are creating an English assignment for a student in grade {grade}.
+    Come up with an interesting, fun and challenging assignment to test
+    vocabulary, comprehension and grammar skills.
+  expected_output: >
+    A suitable assignment for a student in grade {grade} with clear instructions.
+  agent: english_tutor
+  output_file: output/assignment.txt
+
+create_general_homework:
+  description: >
+    You are creating a homework assignment for a student in grade {grade}
+    on the topic of {topic}.
+    Come up with an interesting, fun and challenging assignment on {topic}
+    suitable a student of grade {grade}.
+  expected_output: >
+    A suitable assignment for a student in grade {grade} with clear instructions.
+  agent: general_tutor
+  output_file: output/assignment.txt
+
+compose_email:
+  description: >
+    You are an email composer agent. You read the output/assignment.txt file and 
+    return its full contents as an email body. 
+    The email salutation is to "Dear Parent". 
+    The email body should be the entire content of output/assignment.txt file.
+    The email signature should be "Your Friendly Neighborhood AI Tutor".
+    All the contents including the salutation, the body and the signature 
+    should be in an html format that can render nicely in a web based email
+    browser client.
+
+  expected_output: >
+    A string containing the complete email.
+  agent: mail_composer
+  # output_file: output/body.txt
+  context:
+  - create_math_homework
+  - create_english_homework
+  - create_general_homework
+
+send_email:
+  description: >
+    Send an email to {to_email} with subject as "Homework for {grade}".    
+    The content of the email is the entire html provided by the compose_email task.
+    
+  expected_output: >
+    An email message.
+  agent: mailer
+  output_file: output/email.html
+  context:
+  - compose_email
