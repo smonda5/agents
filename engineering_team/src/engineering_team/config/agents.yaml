@@ -10,8 +10,8 @@ maths_tutor:
     of math concepts suitable for grade {grade}
   verbose: true
   # llm: azure/gpt-4o-mini
-  # llm: groq/llama-3.1-8b-instant
-  llm: openai/gpt-4o-mini
+  llm: groq/llama-3.1-8b-instant
+  # llm: openai/gpt-4o-mini
   # llm: ollama/llama3.1:latest
 
 
@@ -28,8 +28,8 @@ english_tutor:
   verbose: true
   # llm: ollama/llama3.1:latest
   # llm: azure/gpt-4o-mini
-  llm: openai/gpt-4o-mini
-  # llm: groq/llama-3.1-8b-instant
+  # llm: openai/gpt-4o-mini
+  llm: groq/llama-3.1-8b-instant
 
 
 general_tutor:
@@ -45,8 +45,8 @@ general_tutor:
   verbose: true
   # llm: ollama/llama3.1:latest
   # llm: azure/gpt-4o-mini
-  llm: openai/gpt-4o-mini
-  # llm: groq/llama-3.1-8b-instant
+  # llm: openai/gpt-4o-mini
+  llm: groq/llama-3.1-8b-instant
 
 principal:
   role: >
@@ -54,24 +54,32 @@ principal:
   goal: >
     You are an experienced educator and school principal. Given the topic of {topic}, 
     your goal is to delegate the task of creating assignments to the best possible 
-    tutor based on the topic requested by the user. Choose only one tutor for the assignment.
+    tutor based on the topic requested by the user. Choose ONLY ONE TUTOR 
+    for the assignment.
+    If the topic is related to math, delegate to maths_tutor.
+    If the topic is related to english language and literature, delegate to english_tutor.
+    For any other topic, delegate only to the general_tutor.
   backstory: >
-    You are an experienced and highly effective school principal who can delegate the
-    task of creating assignments for students to the most suitable tutor.
+    You are an experienced and highly effective school principal. You must carefully 
+    select the most suitable tutor for the assignment topic, ensuring only one tutor
+    is chosen for each assignment.
   verbose: true
-  # llm: groq/llama-3.1-8b-instant
-  llm: openai/gpt-4o-mini
+  llm: groq/llama-3.1-8b-instant
+  # llm: openai/gpt-4o-mini
+  # llm: azure/gpt-4o-mini
 
 mail_composer:
   role: >
     An email composer agent
   goal: >
-    You read one or more output files and combine them to a single file.
+    You read one or more output files and combine them to a single html file.
   backstory: >
-    You handle combining contents of various files.
+    You are an email composer who creates html email content.
   verbose: true
-  llm: groq/llama-3.1-8b-instant
+  # llm: groq/llama-3.1-8b-instant
   # llm: azure/gpt-4o-mini
+  llm: openai/gpt-4o-mini
+
 
 mailer:
   role: >
@@ -81,6 +89,6 @@ mailer:
   backstory: >
     You handle email delivery tasks.
   verbose: true
-  llm: groq/llama-3.1-8b-instant
-  # llm: azure/gpt-4o-mini
+  # llm: groq/llama-3.1-8b-instant
+  llm: openai/gpt-4o-mini
   

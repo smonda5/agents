@@ -21,9 +21,9 @@ def run():
     """
     print("#### in run()")
     inputs = {
-        'grade': 'two',
+        'grade': 'Three',
         'to_email': 'sushobhanmondal@gmail.com',
-        'topic': 'social studies'
+        'topic': 'simple fractions'
     }
     
     try:

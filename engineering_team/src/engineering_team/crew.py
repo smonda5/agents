@@ -1,5 +1,6 @@
 import os
 from crewai import Agent, Crew, Process, Task, LLM
+from crewai_tools import FileReadTool
 
 from .tools.sendgrid_tool import SendGridTool
 from sendgrid import SendGridAPIClient
@@ -9,30 +10,7 @@ from crewai.project import CrewBase, agent, crew, task
 from dotenv import load_dotenv
 load_dotenv()
 
-llama3_2 = LLM(
-    provider="ollama",
-    model="llama3.1:latest",
-    base_url="http://127.0.0.1:11434"
-)
-
-
-# @Tool
-# def send_email_via_sendgrid(to_email: str, subject: str, content: str) -> str:
-#     """Send an email using SendGrid."""
-#     message = Mail(
-#         # from_email=os.getenv("SENDGRID_FROM_EMAIL"),
-#         from_email="mondalsushobhan@outlook.com",
-#         to_emails="sushobhanmondal@gmail.com",
-#         subject="some subject",
-#         plain_text_content="some content"
-#     )
-
-#     try:
-#         sg = SendGridAPIClient(os.getenv("SENDGRID_API_KEY"))
-#         response = sg.send(message)
-#         return f"Email sent successfully with status {response.status_code}"
-#     except Exception as e:
-#         return f"Failed to send email: {str(e)}"
+file_read_tool = FileReadTool(base_path="output")
 
 @CrewBase
 class Homework():
@@ -49,7 +27,6 @@ class Homework():
             config=self.agents_config['maths_tutor'],
             verbose=True
         )
-        print(f"### Debater_for Agent at work using {agent.llm.model} model")
         return agent
 
     @agent
@@ -82,6 +59,7 @@ class Homework():
     def mail_composer(self) -> Agent:
         agent = Agent(
             config=self.agents_config['mail_composer'],
+            tools=[file_read_tool],
             verbose=True
         )
         return agent
@@ -96,6 +74,12 @@ class Homework():
         )
         print(f"### Mailer Agent at work using {agent.llm.model} model")
         return agent
+
+    @task
+    def create_assignment(self) -> Task:
+        return Task(
+            config=self.tasks_config['create_assignment'],
+        )
 
     @task
     def create_math_homework(self) -> Task:
@@ -133,16 +117,16 @@ class Homework():
     def crew(self) -> Crew:
         """Creates the Debate crew"""
 
-        principal = Agent(
-            config=self.agents_config['principal'],
-            allow_delegation=True
-        )
+        # principal = Agent(
+        #     config=self.agents_config['principal'],
+        #     allow_delegation=True
+        # )
 
         c = Crew(
             agents=self.agents, # Automatically created by the @agent decorator
             tasks=self.tasks, # Automatically created by the @task decorator
-            process=Process.hierarchical,
-            manager_agent=principal,
+            process=Process.sequential,
+            # manager_agent=principal,
             verbose=True
         )
         return c

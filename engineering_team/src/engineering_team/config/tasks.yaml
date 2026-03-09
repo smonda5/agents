@@ -4,6 +4,8 @@ create_math_homework:
     Come up with an interesting, fun and challenging assignment.
   expected_output: >
     A suitable assignment for a student in grade {grade} with clear instructions.
+    Do not add any salutation or signatures to the assignment. Write only the text
+    of the assignment to the output file.
   agent: maths_tutor
   output_file: output/assignment.txt
 
@@ -13,7 +15,9 @@ create_english_homework:
     Come up with an interesting, fun and challenging assignment to test
     vocabulary, comprehension and grammar skills.
   expected_output: >
-    A suitable assignment for a student in grade {grade} with clear instructions.
+    A text-only assignment for a student in with clear instructions. Do not
+    add any salutation or signatures to the assignment. Write only the text
+    of the assignment to the output file.
   agent: english_tutor
   output_file: output/assignment.txt
 
@@ -25,37 +29,70 @@ create_general_homework:
     suitable a student of grade {grade}.
   expected_output: >
     A suitable assignment for a student in grade {grade} with clear instructions.
+    Do not add any salutation or signatures to the assignment. Write only the text
+    of the assignment to the output file.
   agent: general_tutor
   output_file: output/assignment.txt
 
+create_assignment:
+  description: >
+    Based on the topic {topic}, choose ONLY ONE tutor to create assignment:
+    - choose only the maths_tutor for math topics
+    - choose only the english_tutor for English topics
+    - choose only the general_tutor for everything else
+
+    Then instruct ONLY that tutor to create the assignment and write it
+    to output/assignment.txt. No other tutors need to run.
+
+    IMPORTANT:
+    - Do NOT call more than one tutor.
+    - Do NOT create the assignment yourself.
+    - Only delegate to the correct tutor.
+  expected_output: >
+    Confirmation that exactly one tutor was selected and assignment.txt
+    has been created.
+  agent: principal
+  output_file: output/tutorselection.txt
+
 compose_email:
   description: >
-    You are an email composer agent. You read the output/assignment.txt file and 
-    return its full contents as an email body. 
-    The email salutation is to "Dear Parent". 
-    The email body should be the entire content of output/assignment.txt file.
-    The email signature should be "Your Friendly Neighborhood AI Tutor".
-    All the contents including the salutation, the body and the signature 
-    should be in an html format that can render nicely in a web based email
-    browser client.
+    Use file_read_tool to read output/assignment.txt.
 
+    Convert the text into clean, well-structured HTML.
+    Do NOT output Markdown. Convert:
+      - **bold** → <strong>
+      - line breaks → <br> or <p>
+      - numbered lists → <ol><li>...</li></ol>
+      - bullet lists → <ul><li>...</li></ul>
+
+    The assignment text should be broken into paragraphs using <p>.
+    Lists should use <ul> or <ol>.
+    Bold text should use <strong>.
+    Wrap everything inside:
+
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.5;">
+        <p>Dear Parent,</p>
+        {{ formatted_assignment_html }}
+        <p>Your Friendly Neighborhood AI Tutor</p>
+      </body>
+    </html>
+
+    Ensure the output is valid HTML and contains no Markdown.
   expected_output: >
-    A string containing the complete email.
+    A complete HTML email with proper tags and formatting.
   agent: mail_composer
-  # output_file: output/body.txt
+  output_file: output/email.html
   context:
-  - create_math_homework
-  - create_english_homework
-  - create_general_homework
+    - create_assignment
 
 send_email:
   description: >
-    Send an email to {to_email} with subject as "Homework for {grade}".    
-    The content of the email is the entire html provided by the compose_email task.
-    
+    Read output/email.html using file_read_tool.
+    Send an email to {to_email} with subject "Homework for {grade}".
+    Use the entire HTML file as the email body.
   expected_output: >
     An email message.
   agent: mailer
-  output_file: output/email.html
   context:
-  - compose_email
+    - compose_email
