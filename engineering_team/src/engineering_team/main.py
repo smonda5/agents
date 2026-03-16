@@ -19,11 +19,10 @@ def run():
     """
     Run the crew.
     """
-    print("#### in run()")
     inputs = {
-        'grade': 'Three',
+        'grade': 'Nine',
         'to_email': 'sushobhanmondal@gmail.com',
-        'topic': 'simple fractions'
+        'topic': 'Ulysses by Lord Tennyson'
     }
     
     try:
